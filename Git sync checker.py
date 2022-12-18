@@ -25,6 +25,12 @@ class App:
         self.file_menu.add_command(label="Add folder with repos", command=self.add_tab)
         self.file_menu.add_command(label="Save tabs", command=self.save_tabs)
         self.file_menu.add_command(label="Load tabs", command=self.load_tabs)
+        self.file_menu.activate(False)
+
+        self.tab_menu = tk.Menu(self.menu)
+        self.menu.add_cascade(label="Tab", menu=self.tab_menu)
+        self.tab_menu.add_command(label="Change tab name", command=self.change_tab_name)
+        self.tab_menu.add_command(label="Delete tab", command=self.delete_tab)
 
         # Add a Help menu with a About option
         self.help_menu = tk.Menu(self.menu)
@@ -38,7 +44,7 @@ class App:
     def show_about(self):
         messagebox.showinfo("About", "Git sync checker\nby Jakub Kajzer")
     def show_color_explanation(self):
-        messagebox.showinfo("Color explanation", "TODO")
+        messagebox.showinfo("Color explanation", "Green - up to date\nOrange - differences between local and remote\nRed - repo doesn't exist or error")
 
     def load_tabs(self):
         # Delete all tabs
@@ -65,6 +71,7 @@ class App:
                 name = self.notebook.tab(tab_id, "text")
                 path = self.tabs[tab_id]["path"]
                 f.write(f"{name}\t{path}\n")
+        messagebox.showinfo("Save tabs","Tabs saved succesfully!")
 
 
     def add_tab(self, name=None, path=None):
@@ -79,7 +86,7 @@ class App:
         self.notebook.add(tab, text=name)
         self.tabs[tab] = {"path": path, "folders": []}
 
-        listbox = tk.Listbox(tab, width=30)
+        listbox = tk.Listbox(tab, width=50, height=100,selectmode="none")
         listbox.pack()
         self.tabs[tab]["listbox"] = listbox
 
@@ -87,23 +94,20 @@ class App:
         button_frame.pack(side="right")
 
         self.update_tab(tab)
-
-        def change_tab_name():
-            new_name = simpledialog.askstring("Change tab name", "New tab name:")
-            if new_name:
-                self.notebook.tab(tab, text=new_name)
-
-        change_name_button = tk.Button(tab, text="Change tab name", command=change_tab_name)
-        change_name_button.pack()
-
-        def delete_tab():
-            if messagebox.askokcancel("Delete tab", "Are you sure to delete this tab?"):
-                self.notebook.forget(tab)
-                del self.tabs[tab]
-
-        delete_button = tk.Button(tab, text="Delete tab", command=delete_tab)
-        delete_button.pack()
+          
         
+    def delete_tab(self):
+            if messagebox.askokcancel("Delete tab", "Are you sure to delete this tab?"):
+                index = self.notebook.index(self.notebook.select())
+                if index is not None and index in self.tabs:
+                    self.notebook.forget(index)
+                    del self.tabs[index]   
+                    
+    def change_tab_name(self):
+            new_name = simpledialog.askstring("Change tab name", "New tab name:")
+            index = self.notebook.index(self.notebook.select())
+            if new_name and index is not None and index in self.tabs:
+                self.notebook.tab(index, text=new_name) 
 
     def update_tab(self, tab):
         self.tabs[tab]["folders"] = []
