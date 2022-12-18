@@ -98,16 +98,12 @@ class App:
         
     def delete_tab(self):
             if messagebox.askokcancel("Delete tab", "Are you sure to delete this tab?"):
-                index = self.notebook.index(self.notebook.select())
-                if index is not None and index in self.tabs:
-                    self.notebook.forget(index)
-                    del self.tabs[index]   
+                self.notebook.forget(self.notebook.select())
                     
     def change_tab_name(self):
             new_name = simpledialog.askstring("Change tab name", "New tab name:")
-            index = self.notebook.index(self.notebook.select())
-            if new_name and index is not None and index in self.tabs:
-                self.notebook.tab(index, text=new_name) 
+            if new_name:
+                self.notebook.tab(self.notebook.select(), text=new_name) 
 
     def update_tab(self, tab):
         self.tabs[tab]["folders"] = []
