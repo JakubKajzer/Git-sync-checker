@@ -1,0 +1,1 @@
+python -m PyInstaller .\git_sync_checker.py --onefile --hidden-import=tkinter --hidden-import=os --hidden-import=subprocess -i icon.ico -w -F

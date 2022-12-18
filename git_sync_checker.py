@@ -132,19 +132,15 @@ class App:
     def check_repo_status(self, folder_path):
         try:
             # Pobierz nowe dane zdalne
-            subprocess.run(["git", "fetch"], cwd=folder_path, check=True)
+            subprocess.run(["git", "fetch"], cwd=folder_path, check=True, shell=True)
 
             # Sprawdź, czy są niezatwierdzone zmiany w lokalnym repozytorium
-            diff_output = subprocess.run(
-                ["git", "diff"], cwd=folder_path, capture_output=True, check=True
-            ).stdout.decode()
+            diff_output = subprocess.run(["git", "diff"], cwd=folder_path, capture_output=True, check=True, shell=True).stdout.decode()
             if diff_output:
                 return "niezatwierdzone zmiany", "orange"
 
             # Sprawdź, czy lokalne repozytorium jest aktualne w stosunku do zdalnego
-            status_output = subprocess.run(
-                ["git", "status"], cwd=folder_path, capture_output=True, check=True
-            ).stdout.decode()
+            status_output = subprocess.run(["git", "status"], cwd=folder_path, capture_output=True, check=True, shell=True).stdout.decode()
             if "Your branch is up to date" in status_output:
                 return "aktualne", "green"
             elif "Your branch has diverged" in status_output:
