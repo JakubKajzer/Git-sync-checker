@@ -67,6 +67,7 @@ class App:
         if not os.path.exists("tabs.txt"):
             open("tabs.txt", "w").close()
         with open("tabs.txt", "w", encoding="utf-8") as f:
+            f.truncate()
             for tab_id in self.tabs:
                 name = self.notebook.tab(tab_id, "text")
                 path = self.tabs[tab_id]["path"]
@@ -90,15 +91,21 @@ class App:
         listbox.pack()
         self.tabs[tab]["listbox"] = listbox
 
-        button_frame = tk.Frame(tab)
-        button_frame.pack(side="right")
-
         self.update_tab(tab)
           
         
     def delete_tab(self):
             if messagebox.askokcancel("Delete tab", "Are you sure to delete this tab?"):
-                self.notebook.forget(self.notebook.select())
+                tab_name = self.notebook.select()
+                parts=tab_name.split(".")
+                frame_string= parts[-1]
+                tab=self.notebook.children[frame_string]
+                self.notebook.forget(tab_name)
+                del self.tabs[tab]
+
+
+                
+                
                     
     def change_tab_name(self):
             new_name = simpledialog.askstring("Change tab name", "New tab name:")
